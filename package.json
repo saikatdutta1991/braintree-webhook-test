@@ -1,0 +1,29 @@
+{
+  "name": "braintree-webhook-test",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/saikatdutta1991/braintree-webhook-test.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/saikatdutta1991/braintree-webhook-test/issues"
+  },
+  "homepage": "https://github.com/saikatdutta1991/braintree-webhook-test#readme",
+  "dependencies": {
+    "braintree": "^3.7.0",
+    "browsify": "^0.0.4",
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.12"
+  }
+}

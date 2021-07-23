@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <h1>Braintree Webhook Notificaiton Test</h1>
+    <input type="text" id="webhookUrl" placeholder="Webhook Url" onfocus="this.select()">
+    <input type="text" id="merchantId" placeholder="Merchant Id" value="y89kvhx54rzk4zy6" onfocus="this.select()">
+    <input type="text" id="publicKey" placeholder="Public Key" value="rv9sp87phzmcxq79" onfocus="this.select()">
+    <input type="text" id="privateKey" placeholder="Private Key" value="95b75dd12f0ebf7b622dda90a5f18572"
+        onfocus="this.select()">
+    <input type="text" id="subscriptionId" placeholder="Subscription Id" onfocus="this.select()">
+    <select id="notificationKind">
+        <option value="check">Check</option>
+        <option value="subscription_canceled">Subscription Canceled</option>
+        <option value="subscription_charged_successfully">subscription_charged_successfully</option>
+        <option value="subscription_charged_unsuccessfully">subscription_charged_unsuccessfully</option>
+        <option value="subscription_expired">subscription_expired</option>
+        <option value="subscription_trial_ended">subscription_trial_ended</option>
+        <option value="subscription_went_active">subscription_went_active</option>
+        <option value="subscription_went_past_due">subscription_went_past_due</option>
+    </select>
+    <button onclick="trigger()">Trigger webhook</button>
+    <br>
+    <br>
+    <label>Output</label>
+    <pre id="output" style="border:1px solid black;width:100%;height:100vh"></pre>
+    <script>
+        function getInputData() {
+            return {
+                webhookUrl: document.getElementById('webhookUrl').value,
+                merchantId: document.getElementById('merchantId').value,
+                merchantId: document.getElementById('merchantId').value,
+                publicKey: document.getElementById('publicKey').value,
+                privateKey: document.getElementById('privateKey').value,
+                subscriptionId: document.getElementById('subscriptionId').value,
+                notificationKind: document.getElementById('notificationKind').value,
+            }
+        }
+
+        async function generateNotificationData() {
+            const inputData = getInputData();
+            return {
+                formInputData: inputData,
+                notificationPaylaodUsingFormInputData: await fetch(`/generateTestBrainreeSampleNotification?merchantId=${inputData.merchantId}&publicKey=${inputData.publicKey}&privateKey=${inputData.privateKey}&notificationKind=${inputData.notificationKind}&subscriptionId=${inputData.subscriptionId}`).then(response => response.json())
+            };
+        }
+
+        async function trigger() {
+            const requestData = await generateNotificationData();
+
+            var details = {
+                'bt_signature': requestData.notificationPaylaodUsingFormInputData.btSignature,
+                'bt_payload': requestData.notificationPaylaodUsingFormInputData.btPayload,
+            };
+            var formBody = [];
+            for (var property in details) {
+                var encodedKey = encodeURIComponent(property);
+                var encodedValue = encodeURIComponent(details[property]);
+                formBody.push(encodedKey + "=" + encodedValue);
+            }
+            formBody = formBody.join("&");
+
+            const webhookResopnse = fetch(requestData.formInputData.webhookUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+                },
+                body: formBody,
+            })
+                .then(response => response);
+
+
+
+            document.getElementById("output").textContent = JSON.stringify({ requestData, webhookResopnse }, null, 2);
+        }
+
+    </script>
+</body>
+
+</html>
